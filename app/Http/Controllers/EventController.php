@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\DTOs\EventFilterDTO;
 use App\Models\Event;
+use App\Services\EventService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,6 +15,10 @@ use Inertia\Response;
 
 class EventController extends Controller
 {
+    public function __construct(
+        private readonly EventService $eventService,
+    ) {}
+
     public function index(Request $request): Response
     {
         return Inertia::render('Events/Index', [
@@ -41,6 +49,66 @@ class EventController extends Controller
 
         return Inertia::render('Events/Show', [
             'event' => $event,
+        ]);
+    }
+
+    public function visualData(Request $request): JsonResponse
+    {
+        $filterDTO = new EventFilterDTO(
+            status: $request->input('status'),
+            dateFrom: $request->input('from'),
+            dateTo: $request->input('to'),
+            city: $request->input('city'),
+            allowedStatuses: ['published', 'sold_out'],
+        );
+
+        $events = $this->eventService->getFilteredEvents($filterDTO);
+
+        return response()->json([
+            'data'         => $events->items(),
+            'current_page' => $events->currentPage(),
+            'last_page'    => $events->lastPage(),
+            'total'        => $events->total(),
+        ]);
+    }
+
+    public function visualOne(Request $request): Response
+    {
+        $filterDTO = new EventFilterDTO(
+            status: $request->input('status'),
+            dateFrom: $request->input('from'),
+            dateTo: $request->input('to'),
+            city: $request->input('city'),
+            allowedStatuses: ['published', 'sold_out'],
+        );
+
+        $events = $this->eventService->getFilteredEvents($filterDTO);
+
+        return Inertia::render('Events/VisualOne', [
+            'events'   => $events,
+            'filters'  => $filterDTO,
+            'statuses' => ['published', 'sold_out'],
+            'cities'   => $this->eventService->getCities(),
+        ]);
+    }
+
+    public function visualTwo(Request $request): Response
+    {
+        $filterDTO = new EventFilterDTO(
+            status: $request->input('status'),
+            dateFrom: $request->input('from'),
+            dateTo: $request->input('to'),
+            city: $request->input('city'),
+            allowedStatuses: ['published', 'sold_out'],
+        );
+
+        $events = $this->eventService->getFilteredEvents($filterDTO);
+
+        return Inertia::render('Events/VisualTwo', [
+            'events'   => $events,
+            'filters'  => $filterDTO,
+            'statuses' => ['published', 'sold_out'],
+            'cities'   => $this->eventService->getCities(),
         ]);
     }
 

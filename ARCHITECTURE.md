@@ -55,7 +55,8 @@ app/
 ├── Rules/            # Custom validation rules
 ├── Models/           # Eloquent models
 ├── Repositories/     # Read queries
-└── Services/         # Business logic orchestration
+├── Services/         # Business logic orchestration
+└── Support/          # Stateless library/utility classes (no DB, no orchestration)
 ```
 
 ---

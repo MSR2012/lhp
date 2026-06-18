@@ -32,11 +32,15 @@ const mainNavItems: NavItem[] = [
         title: 'Events Visual 1',
         href: '/events-visual-1',
         icon: BarChart3,
+        target: '_blank',
+        external: true,
     },
     {
         title: 'Events Visual 2',
         href: '/events-visual-2',
         icon: Map,
+        target: '_blank',
+        external: true,
     },
 ];
 
